@@ -135,10 +135,13 @@ class SubscriberResourceApi(
    * getAllSubscribers
    * 
    *
+   * @param page Page number of the requested page (optional)
+   * @param size Size of a page (optional)
+   * @param sort Sorting criteria in the format: property(,asc|desc). Default sort order is ascending. Multiple sort criteria are supported. (optional)
    * @return List[Subscriber]
    */
-  def getAllSubscribersUsingGET(): Option[List[Subscriber]] = {
-    val await = Try(Await.result(getAllSubscribersUsingGETAsync(), Duration.Inf))
+  def getAllSubscribersUsingGET(page: Option[Integer] = None, size: Option[Integer] = None, sort: Option[List[String]] = None): Option[List[Subscriber]] = {
+    val await = Try(Await.result(getAllSubscribersUsingGETAsync(page, size, sort), Duration.Inf))
     await match {
       case Success(i) => Some(await.get)
       case Failure(t) => None
@@ -149,10 +152,13 @@ class SubscriberResourceApi(
    * getAllSubscribers asynchronously
    * 
    *
+   * @param page Page number of the requested page (optional)
+   * @param size Size of a page (optional)
+   * @param sort Sorting criteria in the format: property(,asc|desc). Default sort order is ascending. Multiple sort criteria are supported. (optional)
    * @return Future(List[Subscriber])
    */
-  def getAllSubscribersUsingGETAsync(): Future[List[Subscriber]] = {
-      helper.getAllSubscribersUsingGET()
+  def getAllSubscribersUsingGETAsync(page: Option[Integer] = None, size: Option[Integer] = None, sort: Option[List[String]] = None): Future[List[Subscriber]] = {
+      helper.getAllSubscribersUsingGET(page, size, sort)
   }
 
   /**
@@ -205,6 +211,32 @@ class SubscriberResourceApi(
    */
   def getSubscriberByNameUsingGETAsync(name: String): Future[List[Subscriber]] = {
       helper.getSubscriberByNameUsingGET(name)
+  }
+
+  /**
+   * getSubscriberBySecureId
+   * 
+   *
+   * @param secureId secureId 
+   * @return Subscriber
+   */
+  def getSubscriberBySecureIdUsingGET(secureId: String): Option[Subscriber] = {
+    val await = Try(Await.result(getSubscriberBySecureIdUsingGETAsync(secureId), Duration.Inf))
+    await match {
+      case Success(i) => Some(await.get)
+      case Failure(t) => None
+    }
+  }
+
+  /**
+   * getSubscriberBySecureId asynchronously
+   * 
+   *
+   * @param secureId secureId 
+   * @return Future(Subscriber)
+   */
+  def getSubscriberBySecureIdUsingGETAsync(secureId: String): Future[Subscriber] = {
+      helper.getSubscriberBySecureIdUsingGET(secureId)
   }
 
   /**
@@ -295,7 +327,10 @@ class SubscriberResourceApiAsyncHelper(client: TransportClient, config: SwaggerC
     }
   }
 
-  def getAllSubscribersUsingGET()(implicit reader: ClientResponseReader[List[Subscriber]]): Future[List[Subscriber]] = {
+  def getAllSubscribersUsingGET(page: Option[Integer] = None,
+    size: Option[Integer] = None,
+    sort: Option[List[String]] = None
+    )(implicit reader: ClientResponseReader[List[Subscriber]]): Future[List[Subscriber]] = {
     // create path and map variables
     val path = (addFmt("/api/subscribers"))
 
@@ -303,6 +338,18 @@ class SubscriberResourceApiAsyncHelper(client: TransportClient, config: SwaggerC
     val queryParams = new mutable.HashMap[String, String]
     val headerParams = new mutable.HashMap[String, String]
 
+    page match {
+      case Some(param) => queryParams += "page" -> param.toString
+      case _ => queryParams
+    }
+    size match {
+      case Some(param) => queryParams += "size" -> param.toString
+      case _ => queryParams
+    }
+    sort match {
+      case Some(param) => queryParams += "sort" -> param.toString
+      case _ => queryParams
+    }
 
     val resFuture = client.submit("GET", path, queryParams.toMap, headerParams.toMap, "")
     resFuture flatMap { resp =>
@@ -338,6 +385,24 @@ class SubscriberResourceApiAsyncHelper(client: TransportClient, config: SwaggerC
     val headerParams = new mutable.HashMap[String, String]
 
     if (name == null) throw new Exception("Missing required parameter 'name' when calling SubscriberResourceApi->getSubscriberByNameUsingGET")
+
+
+    val resFuture = client.submit("GET", path, queryParams.toMap, headerParams.toMap, "")
+    resFuture flatMap { resp =>
+      process(reader.read(resp))
+    }
+  }
+
+  def getSubscriberBySecureIdUsingGET(secureId: String)(implicit reader: ClientResponseReader[Subscriber]): Future[Subscriber] = {
+    // create path and map variables
+    val path = (addFmt("/api/subscribers/secureId/{secureId}")
+      replaceAll("\\{" + "secureId" + "\\}", secureId.toString))
+
+    // query params
+    val queryParams = new mutable.HashMap[String, String]
+    val headerParams = new mutable.HashMap[String, String]
+
+    if (secureId == null) throw new Exception("Missing required parameter 'secureId' when calling SubscriberResourceApi->getSubscriberBySecureIdUsingGET")
 
 
     val resFuture = client.submit("GET", path, queryParams.toMap, headerParams.toMap, "")

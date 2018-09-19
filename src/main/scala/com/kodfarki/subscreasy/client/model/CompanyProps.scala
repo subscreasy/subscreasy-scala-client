@@ -18,9 +18,13 @@ case class CompanyProps (
   callbackUrl: Option[String] = None,
   company: Option[Company] = None,
   id: Option[Long] = None,
+  paymentGateway: Option[String] = None,
   paymentGatewayApiKey: Option[String] = None,
   paymentGatewaySecurityKey: Option[String] = None,
-  paymentMethod: Option[String] = None,
+  paytrMerchantId: Option[Integer] = None,
+  payuMerchantKeyRenewals: Option[String] = None,
+  payuSecretKeyRenewals: Option[String] = None,
+  privacyPolicyUrl: Option[String] = None,
   secureKey: Option[String] = None
 )
 

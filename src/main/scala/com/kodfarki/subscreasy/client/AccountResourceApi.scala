@@ -14,7 +14,8 @@ package com.kodfarki.subscreasy.client
 
 import java.text.SimpleDateFormat
 
-import com.kodfarki.subscreasy.client.model.SaveCardRequest
+import com.kodfarki.subscreasy.client.model.ResponseEntity
+import com.kodfarki.subscreasy.client.model.UserDTO
 import io.swagger.client.{ApiInvoker, ApiException}
 
 import com.sun.jersey.multipart.FormDataMultiPart
@@ -44,7 +45,7 @@ import scala.util.{Failure, Success, Try}
 
 import org.json4s._
 
-class CardResourceApi(
+class AccountResourceApi(
   val defBasePath: String = "https://localhost:8080",
   defApiInvoker: ApiInvoker = ApiInvoker
 ) {
@@ -77,17 +78,16 @@ class CardResourceApi(
 
   val config: SwaggerConfig = SwaggerConfig.forUrl(new URI(defBasePath))
   val client = new RestClient(config)
-  val helper = new CardResourceApiAsyncHelper(client, config)
+  val helper = new AccountResourceApiAsyncHelper(client, config)
 
   /**
-   * saveCard
+   * isAuthenticated
    * 
    *
-   * @param request request 
-   * @return Any
+   * @return String
    */
-  def saveCardUsingPOST(request: SaveCardRequest): Option[Any] = {
-    val await = Try(Await.result(saveCardUsingPOSTAsync(request), Duration.Inf))
+  def isAuthenticatedUsingGET(): Option[String] = {
+    val await = Try(Await.result(isAuthenticatedUsingGETAsync(), Duration.Inf))
     await match {
       case Success(i) => Some(await.get)
       case Failure(t) => None
@@ -95,31 +95,71 @@ class CardResourceApi(
   }
 
   /**
-   * saveCard asynchronously
+   * isAuthenticated asynchronously
    * 
    *
-   * @param request request 
-   * @return Future(Any)
+   * @return Future(String)
    */
-  def saveCardUsingPOSTAsync(request: SaveCardRequest): Future[Any] = {
-      helper.saveCardUsingPOST(request)
+  def isAuthenticatedUsingGETAsync(): Future[String] = {
+      helper.isAuthenticatedUsingGET()
+  }
+
+  /**
+   * registerAccount
+   * 
+   *
+   * @param managedUserVM managedUserVM 
+   * @return ResponseEntity
+   */
+  def registerAccountUsingPOST(managedUserVM: UserDTO): Option[ResponseEntity] = {
+    val await = Try(Await.result(registerAccountUsingPOSTAsync(managedUserVM), Duration.Inf))
+    await match {
+      case Success(i) => Some(await.get)
+      case Failure(t) => None
+    }
+  }
+
+  /**
+   * registerAccount asynchronously
+   * 
+   *
+   * @param managedUserVM managedUserVM 
+   * @return Future(ResponseEntity)
+   */
+  def registerAccountUsingPOSTAsync(managedUserVM: UserDTO): Future[ResponseEntity] = {
+      helper.registerAccountUsingPOST(managedUserVM)
   }
 
 }
 
-class CardResourceApiAsyncHelper(client: TransportClient, config: SwaggerConfig) extends ApiClient(client, config) {
+class AccountResourceApiAsyncHelper(client: TransportClient, config: SwaggerConfig) extends ApiClient(client, config) {
 
-  def saveCardUsingPOST(request: SaveCardRequest)(implicit reader: ClientResponseReader[Any], writer: RequestWriter[SaveCardRequest]): Future[Any] = {
+  def isAuthenticatedUsingGET()(implicit reader: ClientResponseReader[String]): Future[String] = {
     // create path and map variables
-    val path = (addFmt("/api/card"))
+    val path = (addFmt("/api/authenticate"))
 
     // query params
     val queryParams = new mutable.HashMap[String, String]
     val headerParams = new mutable.HashMap[String, String]
 
-    if (request == null) throw new Exception("Missing required parameter 'request' when calling CardResourceApi->saveCardUsingPOST")
 
-    val resFuture = client.submit("POST", path, queryParams.toMap, headerParams.toMap, writer.write(request))
+    val resFuture = client.submit("GET", path, queryParams.toMap, headerParams.toMap, "")
+    resFuture flatMap { resp =>
+      process(reader.read(resp))
+    }
+  }
+
+  def registerAccountUsingPOST(managedUserVM: UserDTO)(implicit reader: ClientResponseReader[ResponseEntity], writer: RequestWriter[UserDTO]): Future[ResponseEntity] = {
+    // create path and map variables
+    val path = (addFmt("/api/register"))
+
+    // query params
+    val queryParams = new mutable.HashMap[String, String]
+    val headerParams = new mutable.HashMap[String, String]
+
+    if (managedUserVM == null) throw new Exception("Missing required parameter 'managedUserVM' when calling AccountResourceApi->registerAccountUsingPOST")
+
+    val resFuture = client.submit("POST", path, queryParams.toMap, headerParams.toMap, writer.write(managedUserVM))
     resFuture flatMap { resp =>
       process(reader.read(resp))
     }

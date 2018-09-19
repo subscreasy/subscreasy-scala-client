@@ -15,7 +15,6 @@ package com.kodfarki.subscreasy.client.model
 import java.util.Date
 
 case class ServiceInstance (
-  capacity: Option[Number] = None,
   currentUsage: Option[Number] = None,
   endDate: Option[Date] = None,
   id: Option[Long] = None,
@@ -26,7 +25,6 @@ case class ServiceInstance (
   overUsageQuota: Option[Number] = None,
   quotaOrigin: Option[String] = None,
   serviceOffering: Option[ServiceOffering] = None,
-  serviceType: Option[String] = None,
   startDate: Option[Date] = None,
   status: Option[String] = None,
   subscriberId: Option[String] = None,

@@ -13,9 +13,10 @@
 package com.kodfarki.subscreasy.client.model
 
 
-case class Cancellation (
-  cancellationType: Option[String] = None,
-  subscriberId: Option[Long] = None,
-  subscriptionId: Option[Long] = None
+case class LoginVM (
+  company: Option[String] = None,
+  password: String,
+  rememberMe: Option[Boolean] = None,
+  username: String
 )
 

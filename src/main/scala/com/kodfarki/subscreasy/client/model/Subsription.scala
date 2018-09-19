@@ -21,12 +21,16 @@ case class Subsription (
   company: Company,
   endDate: Option[Date] = None,
   id: Option[Long] = None,
-  nextChargingDate: Option[Date] = None,
+  lastEvent: Option[String] = None,
   offer: Offer,
+  paymentMethod: Option[String] = None,
   services: Option[List[ServiceInstance]] = None,
   startDate: Option[Date] = None,
   status: Option[String] = None,
-  subscriberId: Option[String] = None,
-  version: Option[Long] = None
+  subscriber: Option[Subscriber] = None,
+  subscriberSecureId: Option[String] = None,
+  termEndDate: Option[Date] = None,
+  termStartDate: Option[Date] = None,
+  trialEndDate: Option[Date] = None
 )
 

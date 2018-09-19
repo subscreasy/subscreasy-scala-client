@@ -47,7 +47,7 @@ import scala.util.{Failure, Success, Try}
 
 import org.json4s._
 
-class SubsriptionResourceApi(
+class SubscriptionResourceApi(
   val defBasePath: String = "https://localhost:8080",
   defApiInvoker: ApiInvoker = ApiInvoker
 ) {
@@ -80,7 +80,7 @@ class SubsriptionResourceApi(
 
   val config: SwaggerConfig = SwaggerConfig.forUrl(new URI(defBasePath))
   val client = new RestClient(config)
-  val helper = new SubsriptionResourceApiAsyncHelper(client, config)
+  val helper = new SubscriptionResourceApiAsyncHelper(client, config)
 
   /**
    * cancelSubscription
@@ -106,6 +106,32 @@ class SubsriptionResourceApi(
    */
   def cancelSubscriptionUsingPUTAsync(cancellation: Cancellation): Future[Subsription] = {
       helper.cancelSubscriptionUsingPUT(cancellation)
+  }
+
+  /**
+   * getActiveSubscriptionsByEmail
+   * 
+   *
+   * @param email email 
+   * @return List[Subsription]
+   */
+  def getActiveSubscriptionsByEmailUsingGET(email: String): Option[List[Subsription]] = {
+    val await = Try(Await.result(getActiveSubscriptionsByEmailUsingGETAsync(email), Duration.Inf))
+    await match {
+      case Success(i) => Some(await.get)
+      case Failure(t) => None
+    }
+  }
+
+  /**
+   * getActiveSubscriptionsByEmail asynchronously
+   * 
+   *
+   * @param email email 
+   * @return Future(List[Subsription])
+   */
+  def getActiveSubscriptionsByEmailUsingGETAsync(email: String): Future[List[Subsription]] = {
+      helper.getActiveSubscriptionsByEmailUsingGET(email)
   }
 
   /**
@@ -161,14 +187,14 @@ class SubsriptionResourceApi(
   }
 
   /**
-   * getSubsription
+   * getSubscription
    * 
    *
    * @param id id 
    * @return Subsription
    */
-  def getSubsriptionUsingGET(id: Long): Option[Subsription] = {
-    val await = Try(Await.result(getSubsriptionUsingGETAsync(id), Duration.Inf))
+  def getSubscriptionUsingGET(id: Long): Option[Subsription] = {
+    val await = Try(Await.result(getSubscriptionUsingGETAsync(id), Duration.Inf))
     await match {
       case Success(i) => Some(await.get)
       case Failure(t) => None
@@ -176,14 +202,14 @@ class SubsriptionResourceApi(
   }
 
   /**
-   * getSubsription asynchronously
+   * getSubscription asynchronously
    * 
    *
    * @param id id 
    * @return Future(Subsription)
    */
-  def getSubsriptionUsingGETAsync(id: Long): Future[Subsription] = {
-      helper.getSubsriptionUsingGET(id)
+  def getSubscriptionUsingGETAsync(id: Long): Future[Subsription] = {
+      helper.getSubscriptionUsingGET(id)
   }
 
   /**
@@ -214,7 +240,7 @@ class SubsriptionResourceApi(
 
 }
 
-class SubsriptionResourceApiAsyncHelper(client: TransportClient, config: SwaggerConfig) extends ApiClient(client, config) {
+class SubscriptionResourceApiAsyncHelper(client: TransportClient, config: SwaggerConfig) extends ApiClient(client, config) {
 
   def cancelSubscriptionUsingPUT(cancellation: Cancellation)(implicit reader: ClientResponseReader[Subsription], writer: RequestWriter[Cancellation]): Future[Subsription] = {
     // create path and map variables
@@ -224,7 +250,7 @@ class SubsriptionResourceApiAsyncHelper(client: TransportClient, config: Swagger
     val queryParams = new mutable.HashMap[String, String]
     val headerParams = new mutable.HashMap[String, String]
 
-    if (cancellation == null) throw new Exception("Missing required parameter 'cancellation' when calling SubsriptionResourceApi->cancelSubscriptionUsingPUT")
+    if (cancellation == null) throw new Exception("Missing required parameter 'cancellation' when calling SubscriptionResourceApi->cancelSubscriptionUsingPUT")
 
     val resFuture = client.submit("PUT", path, queryParams.toMap, headerParams.toMap, writer.write(cancellation))
     resFuture flatMap { resp =>
@@ -232,16 +258,34 @@ class SubsriptionResourceApiAsyncHelper(client: TransportClient, config: Swagger
     }
   }
 
+  def getActiveSubscriptionsByEmailUsingGET(email: String)(implicit reader: ClientResponseReader[List[Subsription]]): Future[List[Subsription]] = {
+    // create path and map variables
+    val path = (addFmt("/api/subscriptions/subscriber/email/{email}")
+      replaceAll("\\{" + "email" + "\\}", email.toString))
+
+    // query params
+    val queryParams = new mutable.HashMap[String, String]
+    val headerParams = new mutable.HashMap[String, String]
+
+    if (email == null) throw new Exception("Missing required parameter 'email' when calling SubscriptionResourceApi->getActiveSubscriptionsByEmailUsingGET")
+
+
+    val resFuture = client.submit("GET", path, queryParams.toMap, headerParams.toMap, "")
+    resFuture flatMap { resp =>
+      process(reader.read(resp))
+    }
+  }
+
   def getActiveSubscriptionsUsingGET(secureId: String)(implicit reader: ClientResponseReader[List[Subsription]]): Future[List[Subsription]] = {
     // create path and map variables
-    val path = (addFmt("/api/subsriptions/subscriber/{secureId}")
+    val path = (addFmt("/api/subscriptions/subscriber/{secureId}")
       replaceAll("\\{" + "secureId" + "\\}", secureId.toString))
 
     // query params
     val queryParams = new mutable.HashMap[String, String]
     val headerParams = new mutable.HashMap[String, String]
 
-    if (secureId == null) throw new Exception("Missing required parameter 'secureId' when calling SubsriptionResourceApi->getActiveSubscriptionsUsingGET")
+    if (secureId == null) throw new Exception("Missing required parameter 'secureId' when calling SubscriptionResourceApi->getActiveSubscriptionsUsingGET")
 
 
     val resFuture = client.submit("GET", path, queryParams.toMap, headerParams.toMap, "")
@@ -259,7 +303,7 @@ class SubsriptionResourceApiAsyncHelper(client: TransportClient, config: Swagger
     val queryParams = new mutable.HashMap[String, String]
     val headerParams = new mutable.HashMap[String, String]
 
-    if (id == null) throw new Exception("Missing required parameter 'id' when calling SubsriptionResourceApi->getAllCompanySubscriptionsUsingGET")
+    if (id == null) throw new Exception("Missing required parameter 'id' when calling SubscriptionResourceApi->getAllCompanySubscriptionsUsingGET")
 
 
     val resFuture = client.submit("GET", path, queryParams.toMap, headerParams.toMap, "")
@@ -268,9 +312,9 @@ class SubsriptionResourceApiAsyncHelper(client: TransportClient, config: Swagger
     }
   }
 
-  def getSubsriptionUsingGET(id: Long)(implicit reader: ClientResponseReader[Subsription]): Future[Subsription] = {
+  def getSubscriptionUsingGET(id: Long)(implicit reader: ClientResponseReader[Subsription]): Future[Subsription] = {
     // create path and map variables
-    val path = (addFmt("/api/subsriptions/{id}")
+    val path = (addFmt("/api/subscriptions/{id}")
       replaceAll("\\{" + "id" + "\\}", id.toString))
 
     // query params
@@ -292,7 +336,7 @@ class SubsriptionResourceApiAsyncHelper(client: TransportClient, config: Swagger
     val queryParams = new mutable.HashMap[String, String]
     val headerParams = new mutable.HashMap[String, String]
 
-    if (request == null) throw new Exception("Missing required parameter 'request' when calling SubsriptionResourceApi->startSubscriptionUsingPOST")
+    if (request == null) throw new Exception("Missing required parameter 'request' when calling SubscriptionResourceApi->startSubscriptionUsingPOST")
 
     val resFuture = client.submit("POST", path, queryParams.toMap, headerParams.toMap, writer.write(request))
     resFuture flatMap { resp =>

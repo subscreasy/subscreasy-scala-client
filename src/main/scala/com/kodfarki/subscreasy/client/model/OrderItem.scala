@@ -13,16 +13,11 @@
 package com.kodfarki.subscreasy.client.model
 
 
-case class Offer (
-  company: Company,
+case class OrderItem (
   id: Option[Long] = None,
-  multiplePurchase: Boolean,
-  name: String,
-  openEnded: Boolean,
-  price: Number,
-  recurrence: Option[RecurrencePeriod] = None,
-  recurrenceCount: Option[Integer] = None,
-  secureId: Option[String] = None,
-  trialPeriod: Option[Integer] = None
+  offer: Option[Offer] = None,
+  order: Option[Order] = None,
+  product: Option[Product] = None,
+  productCount: Option[Long] = None
 )
 

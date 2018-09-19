@@ -14,7 +14,8 @@ package com.kodfarki.subscreasy.client
 
 import java.text.SimpleDateFormat
 
-import com.kodfarki.subscreasy.client.model.SaveCardRequest
+import com.kodfarki.subscreasy.client.model.LoginVM
+import com.kodfarki.subscreasy.client.model.ResponseEntity
 import io.swagger.client.{ApiInvoker, ApiException}
 
 import com.sun.jersey.multipart.FormDataMultiPart
@@ -44,7 +45,7 @@ import scala.util.{Failure, Success, Try}
 
 import org.json4s._
 
-class CardResourceApi(
+class UserJwtControllerApi(
   val defBasePath: String = "https://localhost:8080",
   defApiInvoker: ApiInvoker = ApiInvoker
 ) {
@@ -77,17 +78,17 @@ class CardResourceApi(
 
   val config: SwaggerConfig = SwaggerConfig.forUrl(new URI(defBasePath))
   val client = new RestClient(config)
-  val helper = new CardResourceApiAsyncHelper(client, config)
+  val helper = new UserJwtControllerApiAsyncHelper(client, config)
 
   /**
-   * saveCard
+   * authorize
    * 
    *
-   * @param request request 
-   * @return Any
+   * @param loginVM loginVM 
+   * @return ResponseEntity
    */
-  def saveCardUsingPOST(request: SaveCardRequest): Option[Any] = {
-    val await = Try(Await.result(saveCardUsingPOSTAsync(request), Duration.Inf))
+  def authorizeUsingPOST(loginVM: LoginVM): Option[ResponseEntity] = {
+    val await = Try(Await.result(authorizeUsingPOSTAsync(loginVM), Duration.Inf))
     await match {
       case Success(i) => Some(await.get)
       case Failure(t) => None
@@ -95,31 +96,31 @@ class CardResourceApi(
   }
 
   /**
-   * saveCard asynchronously
+   * authorize asynchronously
    * 
    *
-   * @param request request 
-   * @return Future(Any)
+   * @param loginVM loginVM 
+   * @return Future(ResponseEntity)
    */
-  def saveCardUsingPOSTAsync(request: SaveCardRequest): Future[Any] = {
-      helper.saveCardUsingPOST(request)
+  def authorizeUsingPOSTAsync(loginVM: LoginVM): Future[ResponseEntity] = {
+      helper.authorizeUsingPOST(loginVM)
   }
 
 }
 
-class CardResourceApiAsyncHelper(client: TransportClient, config: SwaggerConfig) extends ApiClient(client, config) {
+class UserJwtControllerApiAsyncHelper(client: TransportClient, config: SwaggerConfig) extends ApiClient(client, config) {
 
-  def saveCardUsingPOST(request: SaveCardRequest)(implicit reader: ClientResponseReader[Any], writer: RequestWriter[SaveCardRequest]): Future[Any] = {
+  def authorizeUsingPOST(loginVM: LoginVM)(implicit reader: ClientResponseReader[ResponseEntity], writer: RequestWriter[LoginVM]): Future[ResponseEntity] = {
     // create path and map variables
-    val path = (addFmt("/api/card"))
+    val path = (addFmt("/api/authenticate"))
 
     // query params
     val queryParams = new mutable.HashMap[String, String]
     val headerParams = new mutable.HashMap[String, String]
 
-    if (request == null) throw new Exception("Missing required parameter 'request' when calling CardResourceApi->saveCardUsingPOST")
+    if (loginVM == null) throw new Exception("Missing required parameter 'loginVM' when calling UserJwtControllerApi->authorizeUsingPOST")
 
-    val resFuture = client.submit("POST", path, queryParams.toMap, headerParams.toMap, writer.write(request))
+    val resFuture = client.submit("POST", path, queryParams.toMap, headerParams.toMap, writer.write(loginVM))
     resFuture flatMap { resp =>
       process(reader.read(resp))
     }

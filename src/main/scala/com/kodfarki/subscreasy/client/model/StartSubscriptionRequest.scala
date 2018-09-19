@@ -14,11 +14,15 @@ package com.kodfarki.subscreasy.client.model
 
 
 case class StartSubscriptionRequest (
-  apiKey: Option[String] = None,
   callbackUrl: Option[String] = None,
+  companySiteName: Option[String] = None,
   couponCode: Option[String] = None,
-  offer: Option[SubscriptionPlan] = None,
+  editable: Option[Boolean] = None,
+  offer: Option[Offer] = None,
   paymentCard: Option[PaymentCard] = None,
+  paymentType: Option[String] = None,
+  price: Option[Number] = None,
+  privacyPolicyUrl: Option[Boolean] = None,
   subscriber: Option[Subscriber] = None
 )
 

@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat
 import com.kodfarki.subscreasy.client.model.ManagedUserVM
 import com.kodfarki.subscreasy.client.model.ResponseEntity
 import com.kodfarki.subscreasy.client.model.User
+import com.kodfarki.subscreasy.client.model.UserDTO
 import io.swagger.client.{ApiInvoker, ApiException}
 
 import com.sun.jersey.multipart.FormDataMultiPart
@@ -82,6 +83,32 @@ class UserResourceApi(
   val helper = new UserResourceApiAsyncHelper(client, config)
 
   /**
+   * createCompanyUser
+   * 
+   *
+   * @param managedUserVM managedUserVM 
+   * @return ResponseEntity
+   */
+  def createCompanyUserUsingPOST(managedUserVM: ManagedUserVM): Option[ResponseEntity] = {
+    val await = Try(Await.result(createCompanyUserUsingPOSTAsync(managedUserVM), Duration.Inf))
+    await match {
+      case Success(i) => Some(await.get)
+      case Failure(t) => None
+    }
+  }
+
+  /**
+   * createCompanyUser asynchronously
+   * 
+   *
+   * @param managedUserVM managedUserVM 
+   * @return Future(ResponseEntity)
+   */
+  def createCompanyUserUsingPOSTAsync(managedUserVM: ManagedUserVM): Future[ResponseEntity] = {
+      helper.createCompanyUserUsingPOST(managedUserVM)
+  }
+
+  /**
    * createUser
    * 
    *
@@ -131,6 +158,56 @@ class UserResourceApi(
    */
   def deleteUserUsingDELETEAsync(login: String) = {
       helper.deleteUserUsingDELETE(login)
+  }
+
+  /**
+   * getAllUsersByAuthenticatedCompany
+   * 
+   *
+   * @return List[User]
+   */
+  def getAllUsersByAuthenticatedCompanyUsingGET(): Option[List[User]] = {
+    val await = Try(Await.result(getAllUsersByAuthenticatedCompanyUsingGETAsync(), Duration.Inf))
+    await match {
+      case Success(i) => Some(await.get)
+      case Failure(t) => None
+    }
+  }
+
+  /**
+   * getAllUsersByAuthenticatedCompany asynchronously
+   * 
+   *
+   * @return Future(List[User])
+   */
+  def getAllUsersByAuthenticatedCompanyUsingGETAsync(): Future[List[User]] = {
+      helper.getAllUsersByAuthenticatedCompanyUsingGET()
+  }
+
+  /**
+   * getAllUsersByCompanyId
+   * 
+   *
+   * @param companyId companyId 
+   * @return List[User]
+   */
+  def getAllUsersByCompanyIdUsingGET(companyId: Long): Option[List[User]] = {
+    val await = Try(Await.result(getAllUsersByCompanyIdUsingGETAsync(companyId), Duration.Inf))
+    await match {
+      case Success(i) => Some(await.get)
+      case Failure(t) => None
+    }
+  }
+
+  /**
+   * getAllUsersByCompanyId asynchronously
+   * 
+   *
+   * @param companyId companyId 
+   * @return Future(List[User])
+   */
+  def getAllUsersByCompanyIdUsingGETAsync(companyId: Long): Future[List[User]] = {
+      helper.getAllUsersByCompanyIdUsingGET(companyId)
   }
 
   /**
@@ -192,9 +269,9 @@ class UserResourceApi(
    * 
    *
    * @param login login 
-   * @return User
+   * @return UserDTO
    */
-  def getUserUsingGET(login: String): Option[User] = {
+  def getUserUsingGET(login: String): Option[UserDTO] = {
     val await = Try(Await.result(getUserUsingGETAsync(login), Duration.Inf))
     await match {
       case Success(i) => Some(await.get)
@@ -207,9 +284,9 @@ class UserResourceApi(
    * 
    *
    * @param login login 
-   * @return Future(User)
+   * @return Future(UserDTO)
    */
-  def getUserUsingGETAsync(login: String): Future[User] = {
+  def getUserUsingGETAsync(login: String): Future[UserDTO] = {
       helper.getUserUsingGET(login)
   }
 
@@ -243,6 +320,22 @@ class UserResourceApi(
 
 class UserResourceApiAsyncHelper(client: TransportClient, config: SwaggerConfig) extends ApiClient(client, config) {
 
+  def createCompanyUserUsingPOST(managedUserVM: ManagedUserVM)(implicit reader: ClientResponseReader[ResponseEntity], writer: RequestWriter[ManagedUserVM]): Future[ResponseEntity] = {
+    // create path and map variables
+    val path = (addFmt("/api/users/company"))
+
+    // query params
+    val queryParams = new mutable.HashMap[String, String]
+    val headerParams = new mutable.HashMap[String, String]
+
+    if (managedUserVM == null) throw new Exception("Missing required parameter 'managedUserVM' when calling UserResourceApi->createCompanyUserUsingPOST")
+
+    val resFuture = client.submit("POST", path, queryParams.toMap, headerParams.toMap, writer.write(managedUserVM))
+    resFuture flatMap { resp =>
+      process(reader.read(resp))
+    }
+  }
+
   def createUserUsingPOST(managedUserVM: ManagedUserVM)(implicit reader: ClientResponseReader[ResponseEntity], writer: RequestWriter[ManagedUserVM]): Future[ResponseEntity] = {
     // create path and map variables
     val path = (addFmt("/api/users"))
@@ -272,6 +365,37 @@ class UserResourceApiAsyncHelper(client: TransportClient, config: SwaggerConfig)
 
 
     val resFuture = client.submit("DELETE", path, queryParams.toMap, headerParams.toMap, "")
+    resFuture flatMap { resp =>
+      process(reader.read(resp))
+    }
+  }
+
+  def getAllUsersByAuthenticatedCompanyUsingGET()(implicit reader: ClientResponseReader[List[User]]): Future[List[User]] = {
+    // create path and map variables
+    val path = (addFmt("/api/users/company"))
+
+    // query params
+    val queryParams = new mutable.HashMap[String, String]
+    val headerParams = new mutable.HashMap[String, String]
+
+
+    val resFuture = client.submit("GET", path, queryParams.toMap, headerParams.toMap, "")
+    resFuture flatMap { resp =>
+      process(reader.read(resp))
+    }
+  }
+
+  def getAllUsersByCompanyIdUsingGET(companyId: Long)(implicit reader: ClientResponseReader[List[User]]): Future[List[User]] = {
+    // create path and map variables
+    val path = (addFmt("/api/users/company/{companyId}")
+      replaceAll("\\{" + "companyId" + "\\}", companyId.toString))
+
+    // query params
+    val queryParams = new mutable.HashMap[String, String]
+    val headerParams = new mutable.HashMap[String, String]
+
+
+    val resFuture = client.submit("GET", path, queryParams.toMap, headerParams.toMap, "")
     resFuture flatMap { resp =>
       process(reader.read(resp))
     }
@@ -322,7 +446,7 @@ class UserResourceApiAsyncHelper(client: TransportClient, config: SwaggerConfig)
     }
   }
 
-  def getUserUsingGET(login: String)(implicit reader: ClientResponseReader[User]): Future[User] = {
+  def getUserUsingGET(login: String)(implicit reader: ClientResponseReader[UserDTO]): Future[UserDTO] = {
     // create path and map variables
     val path = (addFmt("/api/users/{login}")
       replaceAll("\\{" + "login" + "\\}", login.toString))

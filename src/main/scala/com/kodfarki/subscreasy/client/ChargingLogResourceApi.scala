@@ -188,6 +188,36 @@ class ChargingLogResourceApi(
   }
 
   /**
+   * getUnpaidChargingLogs
+   * 
+   *
+   * @param page Page number of the requested page (optional)
+   * @param size Size of a page (optional)
+   * @param sort Sorting criteria in the format: property(,asc|desc). Default sort order is ascending. Multiple sort criteria are supported. (optional)
+   * @return List[ChargingLog]
+   */
+  def getUnpaidChargingLogsUsingGET(page: Option[Integer] = None, size: Option[Integer] = None, sort: Option[List[String]] = None): Option[List[ChargingLog]] = {
+    val await = Try(Await.result(getUnpaidChargingLogsUsingGETAsync(page, size, sort), Duration.Inf))
+    await match {
+      case Success(i) => Some(await.get)
+      case Failure(t) => None
+    }
+  }
+
+  /**
+   * getUnpaidChargingLogs asynchronously
+   * 
+   *
+   * @param page Page number of the requested page (optional)
+   * @param size Size of a page (optional)
+   * @param sort Sorting criteria in the format: property(,asc|desc). Default sort order is ascending. Multiple sort criteria are supported. (optional)
+   * @return Future(List[ChargingLog])
+   */
+  def getUnpaidChargingLogsUsingGETAsync(page: Option[Integer] = None, size: Option[Integer] = None, sort: Option[List[String]] = None): Future[List[ChargingLog]] = {
+      helper.getUnpaidChargingLogsUsingGET(page, size, sort)
+  }
+
+  /**
    * refund
    * 
    *
@@ -314,6 +344,36 @@ class ChargingLogResourceApiAsyncHelper(client: TransportClient, config: Swagger
     val queryParams = new mutable.HashMap[String, String]
     val headerParams = new mutable.HashMap[String, String]
 
+
+    val resFuture = client.submit("GET", path, queryParams.toMap, headerParams.toMap, "")
+    resFuture flatMap { resp =>
+      process(reader.read(resp))
+    }
+  }
+
+  def getUnpaidChargingLogsUsingGET(page: Option[Integer] = None,
+    size: Option[Integer] = None,
+    sort: Option[List[String]] = None
+    )(implicit reader: ClientResponseReader[List[ChargingLog]]): Future[List[ChargingLog]] = {
+    // create path and map variables
+    val path = (addFmt("/api/charging-logs/unpaid"))
+
+    // query params
+    val queryParams = new mutable.HashMap[String, String]
+    val headerParams = new mutable.HashMap[String, String]
+
+    page match {
+      case Some(param) => queryParams += "page" -> param.toString
+      case _ => queryParams
+    }
+    size match {
+      case Some(param) => queryParams += "size" -> param.toString
+      case _ => queryParams
+    }
+    sort match {
+      case Some(param) => queryParams += "sort" -> param.toString
+      case _ => queryParams
+    }
 
     val resFuture = client.submit("GET", path, queryParams.toMap, headerParams.toMap, "")
     resFuture flatMap { resp =>

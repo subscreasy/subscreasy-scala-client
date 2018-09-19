@@ -16,6 +16,7 @@ package com.kodfarki.subscreasy.client.model
 case class Company (
   address: Option[Address] = None,
   id: Option[Long] = None,
-  name: String
+  name: String,
+  siteName: Option[String] = None
 )
 

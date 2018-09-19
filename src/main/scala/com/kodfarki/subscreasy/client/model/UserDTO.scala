@@ -14,7 +14,7 @@ package com.kodfarki.subscreasy.client.model
 
 import java.util.Date
 
-case class ManagedUserVM (
+case class UserDTO (
   activated: Option[Boolean] = None,
   authorities: Option[List[String]] = None,
   company: Option[Company] = None,
@@ -31,6 +31,7 @@ case class ManagedUserVM (
   login: String,
   password: Option[String] = None,
   resetDate: Option[String] = None,
-  siteName: Option[String] = None
+  siteName: Option[String] = None,
+  subscriber: Option[Boolean] = None
 )
 

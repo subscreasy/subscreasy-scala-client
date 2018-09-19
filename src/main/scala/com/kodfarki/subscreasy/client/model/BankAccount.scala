@@ -13,16 +13,13 @@
 package com.kodfarki.subscreasy.client.model
 
 
-case class Offer (
-  company: Company,
+case class BankAccount (
+  branch: Option[String] = None,
+  city: Option[String] = None,
+  company: Option[Company] = None,
+  country: Option[String] = None,
+  iban: String,
   id: Option[Long] = None,
-  multiplePurchase: Boolean,
-  name: String,
-  openEnded: Boolean,
-  price: Number,
-  recurrence: Option[RecurrencePeriod] = None,
-  recurrenceCount: Option[Integer] = None,
-  secureId: Option[String] = None,
-  trialPeriod: Option[Integer] = None
+  name: String
 )
 

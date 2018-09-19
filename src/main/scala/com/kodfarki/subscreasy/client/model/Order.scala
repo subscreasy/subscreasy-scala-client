@@ -12,17 +12,13 @@
 
 package com.kodfarki.subscreasy.client.model
 
+import java.util.Date
 
-case class Offer (
-  company: Company,
+case class Order (
+  address: Address,
+  createDate: Date,
   id: Option[Long] = None,
-  multiplePurchase: Boolean,
-  name: String,
-  openEnded: Boolean,
-  price: Number,
-  recurrence: Option[RecurrencePeriod] = None,
-  recurrenceCount: Option[Integer] = None,
-  secureId: Option[String] = None,
-  trialPeriod: Option[Integer] = None
+  orderItems: Option[List[OrderItem]] = None,
+  user: User
 )
 

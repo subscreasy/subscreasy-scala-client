@@ -16,6 +16,7 @@ package com.kodfarki.subscreasy.client.model
 case class PaymentCard (
   cardAlias: Option[String] = None,
   cardExpiry: Option[String] = None,
+  cardFamily: Option[String] = None,
   cardHolderName: Option[String] = None,
   cardNumber: Option[String] = None,
   cardToken: Option[String] = None,

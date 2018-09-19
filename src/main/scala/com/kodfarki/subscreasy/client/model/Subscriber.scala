@@ -12,26 +12,21 @@
 
 package com.kodfarki.subscreasy.client.model
 
+import java.util.Date
 
 case class Subscriber (
-  address: Option[String] = None,
-  city: Option[String] = None,
-  country: Option[String] = None,
+  billingAddress: Option[Address] = None,
+  company: Option[Company] = None,
+  createDate: Option[Date] = None,
   email: Option[String] = None,
-  gsmNumber: Option[String] = None,
-  identityNumber: Option[String] = None,
-  ip: Option[String] = None,
-  lastLoginDate: Option[String] = None,
+  id: Option[Long] = None,
+  identificationNo: Option[String] = None,
   name: Option[String] = None,
-  registrationDate: Option[String] = None,
+  phoneNumber: Option[String] = None,
   secureId: Option[String] = None,
-  shippingAddress: Option[String] = None,
-  shippingCity: Option[String] = None,
-  shippingCountry: Option[String] = None,
-  shippingName: Option[String] = None,
-  shippingZipCode: Option[String] = None,
+  shippingAddress: Option[Address] = None,
   surname: Option[String] = None,
-  useBillingAddressForShipping: Option[Boolean] = None,
-  zipCode: Option[String] = None
+  taxNumber: Option[String] = None,
+  worksFor: Option[String] = None
 )
 

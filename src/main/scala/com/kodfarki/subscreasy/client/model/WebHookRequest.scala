@@ -13,9 +13,11 @@
 package com.kodfarki.subscreasy.client.model
 
 
-case class Cancellation (
-  cancellationType: Option[String] = None,
-  subscriberId: Option[Long] = None,
-  subscriptionId: Option[Long] = None
+case class WebHookRequest (
+  paymentLog: Option[ChargingLog] = None,
+  savedCard: Option[SavedCard] = None,
+  subscriber: Option[Subscriber] = None,
+  subscription: Option[Subsription] = None,
+  txId: Option[String] = None
 )
 
